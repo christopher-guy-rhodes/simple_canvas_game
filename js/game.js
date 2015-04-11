@@ -63,7 +63,7 @@ var update = function (modifier) {
 		hero.y -= hero.speed * modifier;
 	}
 
-	if (hero.y < 480 - 32 - 2) {
+	if ((hero.y < 480 - 32 - 2) || (hero.x ) {
 		if (40 in keysDown) { // Player holding down
 			hero.y += hero.speed * modifier;
 		}
@@ -75,7 +75,7 @@ var update = function (modifier) {
 		}
 	}
 
-        if (hero.x < 256 - 32 - 2) {
+        if ((hero.x < 256 - 32 - 2) || (hero.y <= 240)) {
 		if (39 in keysDown) { // Player holding right
 			hero.x += hero.speed * modifier;
 		}
@@ -137,4 +137,3 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 var then = Date.now();
 reset();
 main();
-
