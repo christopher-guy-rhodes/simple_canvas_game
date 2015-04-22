@@ -27,13 +27,16 @@ var monsterImage = new Image();
 monsterImage.onload = function () {
 	monsterReady = true;
 };
+monsterImage.src = "images/monster.png";
 
 // Game objects
 var hero = {
-	speed: 256, // movement in pixels per second
+	speed: 350, // movement in pixels per second
+	width: 32,
+	height: 32
 };
 var monster = {};
-var monstersCaught = 0;
+var monstersCaught = 1;
 
 // Handle keyboard controls
 var keysDown = {};
@@ -48,45 +51,85 @@ addEventListener("keyup", function (e) {
 
 // Reset the game when the player catches a monster
 var reset = function () {
-	hero.x = 1;
-	hero.y = 447;
+	hero.x = 0;
+	hero.y = canvas.height - hero.height;
 
 	// Throw the monster somewhere on the screen randomly
-	monster.x = 0;
+	monster.x = canvas.width - hero.width;
 	monster.y = 0;
 };
 
 // Update game objects
 var update = function (modifier) {
 
-	if (38 in keysDown) { // Player holding up
+	var rectangles = [{x1: 64, y1: 64, x2: 448, y2: 416}];
+
+	var canMoveLeft = true;
+	var canMoveRight = true;
+	var canMoveUp = true;
+	var canMoveDown = true;
+
+	for (var i = 0; i < rectangles.length; i++) {
+		var x1 = rectangles[i].x1;
+		var y1 = rectangles[i].y1;
+		var x2 = rectangles[i].x2;
+		var y2 = rectangles[i].y2;
+		console.log('x:' + hero.x + ', y:' + hero.y);
+
+		if (hero.x > x1 - hero.width && hero.x < x2 && hero.y < y2 && hero.y > y1 - hero.height) {
+			if (y1 - hero.y > 0 && y1 - hero.y < hero.height) {
+				// touching top
+				canMoveDown = false;
+			}
+			if (y2 - hero.y > 0 && y2 - hero.y < hero.height) {
+				// touching bottom
+				canMoveUp = false;
+			}
+			if (x1 - hero.x > 0 && x1 - hero.x < hero.width ) {
+				// touching left
+				canMoveRight = false;
+			}
+			if (x2 - hero.x > 0 && x2 - hero.x < hero.width ) {
+				// touching right
+				canMoveLeft = false;
+			}
+		}
+	}
+
+	// Keep the hero on the grid
+	if (hero.y > canvas.height - hero.height) {
+		canMoveDown = false;
+	}
+	if (hero.y < 0) {
+		canMoveUp = false;
+	}
+	if (hero.x < 0) {
+		canMoveLeft = false;
+	}
+	if (hero.x > canvas.width - hero.width) {
+		canMoveRight = false;
+	}
+
+	if (canMoveUp && 38 in keysDown) { // Player holding up
 		hero.y -= hero.speed * modifier;
 	}
 
-	if ((hero.y < 480 - 32 - 2) || (hero.x ) {
-		if (40 in keysDown) { // Player holding down
-			hero.y += hero.speed * modifier;
-		}
+	if (canMoveDown && 40 in keysDown) { // Player holding down
+		hero.y += hero.speed * modifier;
 	}
-
-	if (hero.x >= 0 + 2) {
-		if (37 in keysDown) { // Player holding left
-			hero.x -= hero.speed * modifier;
-		}
+	if (canMoveLeft && 37 in keysDown) { // Player holding left
+		hero.x -= hero.speed * modifier;
 	}
-
-        if ((hero.x < 256 - 32 - 2) || (hero.y <= 240)) {
-		if (39 in keysDown) { // Player holding right
-			hero.x += hero.speed * modifier;
-		}
+	if (canMoveRight && 39 in keysDown) { // Player holding right
+		hero.x += hero.speed * modifier;
 	}
 
 	// Are they touching?
 	if (
-		hero.x <= (monster.x + 256)
-		&& monster.x <= (hero.x + 32)
-		&& hero.y <= (monster.y)
-		&& monster.y <= (hero.y + 32)
+		hero.x <= (monster.x + hero.width)
+		&& monster.x <= (hero.x + hero.width)
+		&& hero.y <= (monster.y + hero.height)
+		&& monster.y <= (hero.y + hero.height)
 	) {
 		++monstersCaught;
 		reset();
@@ -112,7 +155,7 @@ var render = function () {
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "bottom";
-	ctx.fillText("Wins: " + monstersCaught, 172, 478);
+	ctx.fillText("Level: " + monstersCaught, 256, 480);
 };
 
 // The main game loop
