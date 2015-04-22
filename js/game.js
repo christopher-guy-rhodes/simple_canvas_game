@@ -63,8 +63,8 @@ var reset = function () {
 var update = function (modifier) {
 
 	var rectangles = [
-		             {x1: 64, y1: 64, x2: 448, y2: 416},
-		             {x1: 24, y1: 34, x2: 48, y2: 99}
+		             {x1: 64, y1: 64, x2: 448, y2: 416}/*,
+		             {x1: 24, y1: 34, x2: 48, y2: 99}*/
 	                 ];
 
 	var canMoveLeft = true;
