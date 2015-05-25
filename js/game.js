@@ -1,17 +1,10 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
+
 canvas.width = 512;
 canvas.height = 480;
 document.body.appendChild(canvas);
-
-// Background image
-var bgReady = false;
-var bgImage = new Image();
-bgImage.onload = function () {
-	bgReady = true;
-};
-bgImage.src = "images/background.png";
 
 // Hero image
 var heroReady = false;
@@ -37,6 +30,7 @@ var hero = {
 };
 var monster = {};
 var monstersCaught = 1;
+console.log("set monsters caught to " + monstersCaught);
 
 // Handle keyboard controls
 var keysDown = {};
@@ -54,7 +48,6 @@ var reset = function () {
 	hero.x = 0;
 	hero.y = canvas.height - hero.height;
 
-	// Throw the monster somewhere on the screen randomly
 	monster.x = canvas.width - hero.width;
 	monster.y = 0;
 };
@@ -62,22 +55,51 @@ var reset = function () {
 // Update game objects
 var update = function (modifier) {
 
-	var rectangles = [
-		             {x1: 64, y1: 64, x2: 448, y2: 416},
-		             {x1: 24, y1: 34, x2: 48, y2: 99}
-	                 ];
+	var rectanglesSet = [
+                        [
+		                    {x1: 0, y1: 0, x2: 64, y2: 64, color: "black"},
+		                    {x1: 128, y1: 128, x2: 256, y2: 256, color: "black"},
+	                    ],
+                        [
+		                    {x1: 128, y1: 128, x2: 256, y2: 256, color: "black"},
+	                    ],
+                        [
+		                    {x1: 0, y1: 0, x2: 64, y2: 64, color: "black"},
+	                    ],
+                    ];
+
+    ctx.beginPath();
+    ctx.rect(0, 0, 512, 480);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.rect(410, 450, 512, 480);
+    ctx.fillStyle = 'black';
+    ctx.fill();
 
 	var canMoveLeft = true;
 	var canMoveRight = true;
 	var canMoveUp = true;
 	var canMoveDown = true;
 
+    if (typeof rectanglesSet[monstersCaught-1] === 'undefined') {
+        monstersCaught = 1;
+        console.log("reset monsters caught to " + monstersCaught);
+    } else {
+        rectangles = rectanglesSet[monstersCaught-1];
+    }
+
 	for (var i = 0; i < rectangles.length; i++) {
 		var x1 = rectangles[i].x1;
 		var y1 = rectangles[i].y1;
 		var x2 = rectangles[i].x2;
 		var y2 = rectangles[i].y2;
-		console.log('x:' + hero.x + ', y:' + hero.y);
+
+		ctx.beginPath();
+        ctx.rect(x1, y1, x2 - x1, y2 - y1);
+        ctx.fillStyle = rectangles[i].color;
+        ctx.fill();
 
 		if (hero.x > x1 - hero.width && hero.x < x2 && hero.y < y2 && hero.y > y1 - hero.height) {
 			if (y1 - hero.y > 0 && y1 - hero.y < hero.height) {
@@ -135,6 +157,7 @@ var update = function (modifier) {
 		&& monster.y <= (hero.y + hero.height)
 	) {
 		++monstersCaught;
+        console.log("incremented monsters caught to " + monstersCaught);
 		reset();
 	}
 
@@ -142,9 +165,6 @@ var update = function (modifier) {
 
 // Draw everything
 var render = function () {
-	if (bgReady) {
-		ctx.drawImage(bgImage, 0, 0);
-	}
 
 	if (heroReady) {
 		ctx.drawImage(heroImage, hero.x, hero.y);
@@ -154,11 +174,11 @@ var render = function () {
 		ctx.drawImage(monsterImage, monster.x, monster.y);
 	}
 
-	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.fillStyle = "rgb(0, 256, 0)";
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "bottom";
-	ctx.fillText("Level: " + monstersCaught, 256, 480);
+	ctx.fillText("Level: " + monstersCaught, 416, 480);
 };
 
 // The main game loop
