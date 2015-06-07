@@ -1,6 +1,7 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
+ctx.strokeStyle = 'black';
 
 canvas.width = 512;
 canvas.height = 480;
@@ -24,13 +25,12 @@ monsterImage.src = "images/monster.png";
 
 // Game objects
 var hero = {
-	speed: 256, // movement in pixels per second
+	speed: 64, // movement in pixels per second
 	width: 32,
 	height: 32
 };
 var monster = {};
 var monstersCaught = 1;
-console.log("set monsters caught to " + monstersCaught);
 
 // Handle keyboard controls
 var keysDown = {};
@@ -57,11 +57,28 @@ var update = function (modifier) {
 
 	var rectanglesSet = [
                         [
-		                    {x1: 0, y1: 0, x2: 64, y2: 64, color: "black"},
-		                    {x1: 128, y1: 128, x2: 256, y2: 256, color: "black"},
+                            {x1: 0, y1: 0, x2: 384, y2: 32, color: "black"},
+                            {x1: 432, y1: 16, x2: 464, y2: 48, color: "black"},
+		                    {x1: 0, y1: 0, x2: 32, y2: 432, color: "black"},
+		                    {x1: 80, y1: 208, x2: 112, y2: 272, color: "black"},
+		                    {x1: 80, y1: 80, x2:160 , y2: 160 , color: "black"},
+		                    {x1: 160, y1: 208, x2: 240, y2: 240, color: "black"},
+		                    {x1: 208, y1: 80 , x2: 240 , y2: 208, color: "black"},
+		                    {x1: 160, y1: 288, x2: 240, y2: 320, color: "black"},
+		                    {x1: 208, y1: 240, x2: 240, y2: 288, color: "black"},
+		                    {x1: 112, y1: 368, x2: 240, y2: 400, color: "black"},
+		                    {x1: 80, y1: 320, x2: 112, y2: 400, color: "black"},
+		                    {x1: 288, y1: 368, x2: 320, y2: 400, color: "black"},
+                            {x1: 80, y1: 448, x2: 320, y2: 480, color: "black"},
+                            {x1: 288, y1: 160, x2: 320 , y2: 320, color: "black"},
+                            {x1: 288, y1: 80, x2: 480, y2: 112, color: "black" },
+                            {x1: 448, y1: 80, x2: 480, y2:160, color: "black" },
+                            {x1: 320, y1: 160, x2: 480, y2: 192, color: "black" },
+                            {x1: 448, y1: 192, x2: 480, y2: 400, color: "black" },
+                            {x1: 368, y1: 240, x2: 400, y2: 480, color: "black"},
 	                    ],
                         [
-		                    {x1: 128, y1: 128, x2: 256, y2: 256, color: "black"},
+		                    {x1: 128, y1: 128, x2: 256, y2: 256, color: "blue"},
 	                    ],
                         [
 		                    {x1: 0, y1: 0, x2: 64, y2: 64, color: "black"},
@@ -72,6 +89,7 @@ var update = function (modifier) {
     ctx.rect(0, 0, 512, 480);
     ctx.fillStyle = 'white';
     ctx.fill();
+    ctx.stroke();
 
     ctx.beginPath();
     ctx.rect(410, 450, 512, 480);
@@ -82,63 +100,76 @@ var update = function (modifier) {
 	var canMoveRight = true;
 	var canMoveUp = true;
 	var canMoveDown = true;
+    var offGrid = false;
 
     if (typeof rectanglesSet[monstersCaught-1] === 'undefined') {
         monstersCaught = 1;
-        console.log("reset monsters caught to " + monstersCaught);
     } else {
         rectangles = rectanglesSet[monstersCaught-1];
     }
 
 	for (var i = 0; i < rectangles.length; i++) {
+
 		var x1 = rectangles[i].x1;
 		var y1 = rectangles[i].y1;
 		var x2 = rectangles[i].x2;
 		var y2 = rectangles[i].y2;
 
 		ctx.beginPath();
-        ctx.rect(x1, y1, x2 - x1, y2 - y1);
+        ctx.rect(x1 , y1, x2 - x1, y2 - y1);
         ctx.fillStyle = rectangles[i].color;
         ctx.fill();
 
-		if (hero.x > x1 - hero.width && hero.x < x2 && hero.y < y2 && hero.y > y1 - hero.height) {
-			if (y1 - hero.y > 0 && y1 - hero.y < hero.height) {
-				// touching top
-				canMoveDown = false;
-			}
-			if (y2 - hero.y > 0 && y2 - hero.y < hero.height) {
-				// touching bottom
-				canMoveUp = false;
-			}
-			if (x1 - hero.x > 0 && x1 - hero.x < hero.width ) {
-				// touching left
-				canMoveRight = false;
-			}
-			if (x2 - hero.x > 0 && x2 - hero.x < hero.width ) {
-				// touching right
-				canMoveLeft = false;
-			}
-		}
+        if (((hero.x + 32) > x1) && (hero.x) < x2) {
+            if (hero.y + 32 > y1 && hero.y < y1) {
+                canMoveDown = false;
+                if (hero.y + 32 > y1) {
+                }
+                if (hero.y < y2) {
+                }
+            }
+            if (hero.y < y2 && hero.y > y1) {
+                canMoveUp = false;
+            }
+            if (hero.x + 32 < x2) {
+                if (hero.y < y2 && hero.y + 32 > y1) {
+                    canMoveRight = false;
+                }
+
+            }
+            if (hero.x + 32 > x2) {
+                if (hero.y < y2 && hero.y + 32 > y1) {
+                    canMoveLeft = false;
+                }
+            }
+        }
 	}
 
 	// Keep the hero on the grid
 	if (hero.y > canvas.height - hero.height) {
 		canMoveDown = false;
+        offGrid = true;
 	}
 	if (hero.y < 0) {
 		canMoveUp = false;
+        offGrid = true;
 	}
 	if (hero.x < 0) {
 		canMoveLeft = false;
+        offGrid = true;
 	}
 	if (hero.x > canvas.width - hero.width) {
 		canMoveRight = false;
+        offGrid = true;
 	}
+
+    if (!offGrid && (!canMoveUp || !canMoveDown || !canMoveLeft || !canMoveRight)) {
+		reset();
+    }
 
 	if (canMoveUp && 38 in keysDown) { // Player holding up
 		hero.y -= hero.speed * modifier;
 	}
-
 	if (canMoveDown && 40 in keysDown) { // Player holding down
 		hero.y += hero.speed * modifier;
 	}
@@ -157,7 +188,6 @@ var update = function (modifier) {
 		&& monster.y <= (hero.y + hero.height)
 	) {
 		++monstersCaught;
-        console.log("incremented monsters caught to " + monstersCaught);
 		reset();
 	}
 
