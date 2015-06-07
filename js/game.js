@@ -182,7 +182,7 @@ var update = function (modifier) {
 		&& finish.y <= (truck.y + truck.height)
 	) {
 		++finishes;
-        crashes = 0;
+        //crashes = 0;
 		reset();
 	}
 
