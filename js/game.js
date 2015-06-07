@@ -7,30 +7,31 @@ canvas.width = 512;
 canvas.height = 480;
 document.body.appendChild(canvas);
 
-// Hero image
-var heroReady = false;
-var heroImage = new Image();
-heroImage.onload = function () {
-	heroReady = true;
+// truck image
+var carReady = false;
+var truckImage = new Image();
+truckImage.onload = function () {
+	carReady = true;
 };
-heroImage.src = "images/hero.png";
+truckImage.src = "images/truck.png";
 
-// Monster image
-var monsterReady = false;
-var monsterImage = new Image();
-monsterImage.onload = function () {
-	monsterReady = true;
+// finish image
+var finishReady = false;
+var finishImage = new Image();
+finishImage.onload = function () {
+	finishReady = true;
 };
-monsterImage.src = "images/monster.png";
+finishImage.src = "images/finish.png";
 
 // Game objects
-var hero = {
+var truck = {
 	speed: 64, // movement in pixels per second
 	width: 32,
 	height: 32
 };
-var monster = {};
-var monstersCaught = 1;
+var finish = {};
+var finishes = 1;
+var crashes = 0;
 
 // Handle keyboard controls
 var keysDown = {};
@@ -43,13 +44,13 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-// Reset the game when the player catches a monster
+// Reset the game when the player catches a finish
 var reset = function () {
-	hero.x = 0;
-	hero.y = canvas.height - hero.height;
+	truck.x = 0;
+	truck.y = canvas.height - truck.height;
 
-	monster.x = canvas.width - hero.width;
-	monster.y = 0;
+	finish.x = canvas.width - truck.width;
+	finish.y = 0;
 };
 
 // Update game objects
@@ -91,22 +92,18 @@ var update = function (modifier) {
     ctx.fill();
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.rect(410, 450, 512, 480);
-    ctx.fillStyle = 'black';
-    ctx.fill();
-
 	var canMoveLeft = true;
 	var canMoveRight = true;
 	var canMoveUp = true;
 	var canMoveDown = true;
     var offGrid = false;
 
-    if (typeof rectanglesSet[monstersCaught-1] === 'undefined') {
-        monstersCaught = 1;
+    if (typeof rectanglesSet[finishes-1] === 'undefined') {
+        finishes = 1;
     } else {
-        rectangles = rectanglesSet[monstersCaught-1];
+        rectangles = rectanglesSet[finishes-1];
     }
+
 
 	for (var i = 0; i < rectangles.length; i++) {
 
@@ -120,74 +117,72 @@ var update = function (modifier) {
         ctx.fillStyle = rectangles[i].color;
         ctx.fill();
 
-        if (((hero.x + 32) > x1) && (hero.x) < x2) {
-            if (hero.y + 32 > y1 && hero.y < y1) {
+        if (((truck.x + 32) > x1) && (truck.x) < x2) {
+            if (truck.y + 32 > y1 && truck.y < y1) {
                 canMoveDown = false;
-                if (hero.y + 32 > y1) {
-                }
-                if (hero.y < y2) {
-                }
             }
-            if (hero.y < y2 && hero.y > y1) {
+            if (truck.y < y2 && truck.y > y1) {
                 canMoveUp = false;
             }
-            if (hero.x + 32 < x2) {
-                if (hero.y < y2 && hero.y + 32 > y1) {
+            if (truck.x + 32 < x2) {
+                if (truck.y < y2 && truck.y + 32 > y1) {
                     canMoveRight = false;
                 }
 
             }
-            if (hero.x + 32 > x2) {
-                if (hero.y < y2 && hero.y + 32 > y1) {
+            if (truck.x + 32 > x2) {
+                if (truck.y < y2 && truck.y + 32 > y1) {
                     canMoveLeft = false;
                 }
             }
         }
 	}
 
-	// Keep the hero on the grid
-	if (hero.y > canvas.height - hero.height) {
+	// Keep the truck on the grid
+	if (truck.y > canvas.height - truck.height) {
 		canMoveDown = false;
         offGrid = true;
 	}
-	if (hero.y < 0) {
+	if (truck.y < 0) {
 		canMoveUp = false;
         offGrid = true;
 	}
-	if (hero.x < 0) {
+	if (truck.x < 0) {
 		canMoveLeft = false;
         offGrid = true;
 	}
-	if (hero.x > canvas.width - hero.width) {
+	if (truck.x > canvas.width - truck.width) {
 		canMoveRight = false;
         offGrid = true;
 	}
 
     if (!offGrid && (!canMoveUp || !canMoveDown || !canMoveLeft || !canMoveRight)) {
 		reset();
+        crashes++;
     }
 
 	if (canMoveUp && 38 in keysDown) { // Player holding up
-		hero.y -= hero.speed * modifier;
+		truck.y -= truck.speed * modifier;
 	}
 	if (canMoveDown && 40 in keysDown) { // Player holding down
-		hero.y += hero.speed * modifier;
+		truck.y += truck.speed * modifier;
 	}
 	if (canMoveLeft && 37 in keysDown) { // Player holding left
-		hero.x -= hero.speed * modifier;
+		truck.x -= truck.speed * modifier;
 	}
 	if (canMoveRight && 39 in keysDown) { // Player holding right
-		hero.x += hero.speed * modifier;
+		truck.x += truck.speed * modifier;
 	}
 
 	// Are they touching?
 	if (
-		hero.x <= (monster.x + hero.width)
-		&& monster.x <= (hero.x + hero.width)
-		&& hero.y <= (monster.y + hero.height)
-		&& monster.y <= (hero.y + hero.height)
+		truck.x <= (finish.x + truck.width)
+		&& finish.x <= (truck.x + truck.width)
+		&& truck.y <= (finish.y + truck.height)
+		&& finish.y <= (truck.y + truck.height)
 	) {
-		++monstersCaught;
+		++finishes;
+        crashes = 0;
 		reset();
 	}
 
@@ -196,19 +191,20 @@ var update = function (modifier) {
 // Draw everything
 var render = function () {
 
-	if (heroReady) {
-		ctx.drawImage(heroImage, hero.x, hero.y);
+	if (carReady) {
+		ctx.drawImage(truckImage, truck.x, truck.y);
 	}
 
-	if (monsterReady) {
-		ctx.drawImage(monsterImage, monster.x, monster.y);
+	if (finishReady) {
+		ctx.drawImage(finishImage, finish.x, finish.y);
 	}
 
-	ctx.fillStyle = "rgb(0, 256, 0)";
+	ctx.fillStyle = "rgb(256, 0, 0)";
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "bottom";
-	ctx.fillText("Level: " + monstersCaught, 416, 480);
+	ctx.fillText("Level: " + finishes, 416, 480);
+	ctx.fillText("Crash: " + crashes, 410, 454);
 };
 
 // The main game loop
