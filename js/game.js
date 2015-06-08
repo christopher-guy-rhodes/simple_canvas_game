@@ -25,7 +25,7 @@ finishImage.src = "images/finish.png";
 
 // Game objects
 var truck = {
-	speed: 64, // movement in pixels per second
+	speed: 80, // movement in pixels per second
 	width: 32,
 	height: 32
 };
@@ -57,34 +57,31 @@ var reset = function () {
 var update = function (modifier) {
 
 	var rectanglesSet = [
-                        [
-                            {x1: 0, y1: 0, x2: 384, y2: 32, color: "black"},
-                            {x1: 432, y1: 16, x2: 464, y2: 48, color: "black"},
-		                    {x1: 0, y1: 0, x2: 32, y2: 432, color: "black"},
-		                    {x1: 80, y1: 208, x2: 112, y2: 272, color: "black"},
-		                    {x1: 80, y1: 80, x2:160 , y2: 160 , color: "black"},
-		                    {x1: 160, y1: 208, x2: 240, y2: 240, color: "black"},
-		                    {x1: 208, y1: 80 , x2: 240 , y2: 208, color: "black"},
-		                    {x1: 160, y1: 288, x2: 240, y2: 320, color: "black"},
-		                    {x1: 208, y1: 240, x2: 240, y2: 288, color: "black"},
-		                    {x1: 112, y1: 368, x2: 240, y2: 400, color: "black"},
-		                    {x1: 80, y1: 320, x2: 112, y2: 400, color: "black"},
-		                    {x1: 288, y1: 368, x2: 320, y2: 400, color: "black"},
-                            {x1: 80, y1: 448, x2: 320, y2: 480, color: "black"},
-                            {x1: 288, y1: 160, x2: 320 , y2: 320, color: "black"},
-                            {x1: 288, y1: 80, x2: 480, y2: 112, color: "black" },
-                            {x1: 448, y1: 80, x2: 480, y2:160, color: "black" },
-                            {x1: 320, y1: 160, x2: 480, y2: 192, color: "black" },
-                            {x1: 448, y1: 192, x2: 480, y2: 400, color: "black" },
-                            {x1: 368, y1: 240, x2: 400, y2: 480, color: "black"},
-	                    ],
-                        [
-		                    {x1: 128, y1: 128, x2: 256, y2: 256, color: "blue"},
-	                    ],
-                        [
-		                    {x1: 0, y1: 0, x2: 64, y2: 64, color: "black"},
-	                    ],
-                    ];
+                            [
+		                        {x1: 0, y1: 0, x2: 64, y2: 64, color: "black"},
+	                        ],
+                            [
+                                {x1: 0, y1: 0, x2: 384, y2: 32, color: "black"},
+                                {x1: 432, y1: 0, x2: 464, y2: 46, color: "black"},
+		                        {x1: 0, y1: 0, x2: 32, y2: 432, color: "black"},
+		                        {x1: 80, y1: 208, x2: 112, y2: 272, color: "black"},
+		                        {x1: 80, y1: 80, x2:160 , y2: 160 , color: "black"},
+		                        {x1: 160, y1: 208, x2: 240, y2: 240, color: "black"},
+		                        {x1: 208, y1: 80 , x2: 240 , y2: 208, color: "black"},
+		                        {x1: 160, y1: 288, x2: 240, y2: 320, color: "black"},
+		                        {x1: 208, y1: 240, x2: 240, y2: 288, color: "black"},
+		                        {x1: 112, y1: 368, x2: 240, y2: 400, color: "black"},
+		                        {x1: 80, y1: 320, x2: 112, y2: 400, color: "black"},
+		                        {x1: 288, y1: 368, x2: 320, y2: 400, color: "black"},
+                                {x1: 80, y1: 448, x2: 320, y2: 480, color: "black"},
+                                {x1: 288, y1: 160, x2: 320 , y2: 320, color: "black"},
+                                {x1: 288, y1: 80, x2: 480, y2: 112, color: "black" },
+                                {x1: 448, y1: 80, x2: 480, y2:160, color: "black" },
+                                {x1: 320, y1: 160, x2: 480, y2: 192, color: "black" },
+                                {x1: 448, y1: 192, x2: 480, y2: 400, color: "black" },
+                                {x1: 368, y1: 240, x2: 400, y2: 480, color: "black"},
+	                        ],
+                        ];
 
     ctx.beginPath();
     ctx.rect(0, 0, 512, 480);
@@ -200,11 +197,11 @@ var render = function () {
 	}
 
 	ctx.fillStyle = "rgb(256, 0, 0)";
-	ctx.font = "24px Helvetica";
+	ctx.font = "18px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "bottom";
-	ctx.fillText("Level: " + finishes, 416, 480);
-	ctx.fillText("Crash: " + crashes, 410, 454);
+	ctx.fillText("Level: " + finishes, 402, 480);
+	ctx.fillText("Crashes: " + crashes, 402, 464);
 };
 
 // The main game loop
